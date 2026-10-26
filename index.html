@@ -401,7 +401,7 @@ function vCard(){
       <tbody>${rows}</tbody></table></div>
     <p class="legend">Verde: bajo par. Rojo: sobre par. El punto marca un hoyo con penalidad. Stableford sin hándicap. Tocá un hoyo para editarlo.</p>
     ${viewMatch?`<div class="stack"><button class="btn press" data-act="tohist">Volver al historial</button><button class="btn danger press" data-act="delpast" data-id="${m.id}">${armed==='past'+m.id?'¿Seguro? Tocá de nuevo':'Borrar partida'}</button></div>`
-    :`<div class="stack"><button class="btn press" data-act="tohole">Volver al hoyo</button><button class="btn soft press" data-act="finish">Terminar y guardar</button><button class="btn soft press" data-act="newmatch">Nueva partida</button></div>`}`;
+    :`<div class="stack"><button class="btn press" data-act="tohole">Volver al hoyo</button><button class="btn soft press" data-act="finish">Terminar y guardar</button><button class="btn soft press" data-act="newmatch">Nueva partida</button><button class="btn danger press" data-act="discard">${armed==='discard'?'¿Seguro? Tocá de nuevo':'Cancelar sin guardar'}</button></div>`}`;
 }
 function vHistory(){
   const hs=S.history||[];
@@ -495,6 +495,10 @@ document.addEventListener('click',ev=>{
     case 'newmatch': setView('new'); break;
     case 'finish': archive(); S.match=null; save(); toast('Partida guardada en el historial.'); setView('history'); break;
     case 'tohist': viewMatch=null; setView('history'); break;
+    case 'discard':
+      if(armed==='discard'){armed=null; S.match=null; save(); toast('Partida cancelada.'); setView('new');}
+      else{armed='discard'; render(); setTimeout(()=>{if(armed==='discard'){armed=null;render();}},3000);}
+      break;
     case 'openpast': {const p=(S.history||[]).find(x=>x.id===t.dataset.id); if(p){view='card'; viewMatch=p; render(); window.scrollTo(0,0);} break;}
     case 'delpast': {
       const id=t.dataset.id;
